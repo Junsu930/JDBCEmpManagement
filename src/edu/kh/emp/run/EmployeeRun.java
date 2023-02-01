@@ -10,5 +10,4 @@ public class EmployeeRun {
 		new EmployeeView().displayMenu();
 		
 	}
-
 }

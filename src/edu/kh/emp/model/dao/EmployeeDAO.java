@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -330,14 +331,14 @@ public class EmployeeDAO {
 	
 	public Map<String, Integer> selectDeptTotalSalary(){
 		
-		Map<String, Integer> sumlist = new HashMap<>();
+		Map<String, Integer> sumlist = new LinkedHashMap<>();
 		try {
 			
 			Class.forName(driver);
 			conn=DriverManager.getConnection(url, user, pw); 
 			stmt = conn.createStatement();
 			
-			String sql = "SELECT NVL(DEPT_CODE, '부서없음') DEPT_CODE, SUM(SALARY) SUM_SAL FROM EMPLOYEE GROUP BY DEPT_CODE";
+			String sql = "SELECT NVL(DEPT_CODE, '부서없음') DEPT_CODE, SUM(SALARY) SUM_SAL FROM EMPLOYEE GROUP BY DEPT_CODE ORDER BY DEPT_CODE";
 			rs = stmt.executeQuery(sql);
 			
 			while(rs.next()) {
@@ -365,14 +366,14 @@ public class EmployeeDAO {
 	
 	public Map<String, Double> selectJobAvgSalary() {
 		
-		Map<String, Double> avglist = new HashMap<>();
+		Map<String, Double> avglist = new LinkedHashMap<>();
 		
 		try {
 			Class.forName(driver);
 			conn=DriverManager.getConnection(url, user, pw); 
 			stmt = conn.createStatement();
 			
-			String sql = "SELECT JOB_CODE, ROUND(AVG(SALARY), 1) AVG_SAL FROM EMPLOYEE GROUP BY JOB_CODE";
+			String sql = "SELECT JOB_CODE, ROUND(AVG(SALARY), 1) AVG_SAL FROM EMPLOYEE GROUP BY JOB_CODE ORDER BY JOB_CODE";
 			rs = stmt.executeQuery(sql);
 			
 			while(rs.next()) {
