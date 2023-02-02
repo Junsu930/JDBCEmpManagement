@@ -111,24 +111,27 @@ public class EmployeeDAO {
 	}
 	
 	
-	public Employee selectEmpId() {
+	public Employee selectEmpId(int empId) {
+		
 		Employee emp = null;
+		// 결과 저장용 변수 선언
+		// 만약 조회 결과가 있으면 Employee객체를 생성해서 emp에 대입(null이 아님)
+		// 만약 조회 결과가 없으면 emp에 아무것도 대입하지 않음
+		
 		
 		try {
 			// 2. JDBC 참조 변수에 객체 대입
 			Class.forName(driver);
 			conn=DriverManager.getConnection(url, user, pw); 
-			int no = new EmployeeView().inputEmpId();
 			String sql = "SELECT EMP_ID, EMP_NAME, EMP_NO, EMAIL, PHONE, NVL(DEPT_TITLE, '부서없음') DEPT_TITLE, JOB_NAME, SALARY"
-					+ " FROM EMPLOYEE NATURAL JOIN JOB LEFT JOIN DEPARTMENT ON (DEPT_ID = DEPT_CODE) WHERE EMP_ID = " + no;
+					+ " FROM EMPLOYEE NATURAL JOIN JOB LEFT JOIN DEPARTMENT ON (DEPT_ID = DEPT_CODE) WHERE EMP_ID = " + empId;
 			stmt = conn.createStatement();
 			
 			rs = stmt.executeQuery(sql);
 			
-			
+			// 조회 결과가 최대 1행인 경우 불필요한 조건 검사를 줄이기 위해서 if 문 사용 권장
 			if(rs.next()) {
 				
-				int empId = rs.getInt("EMP_ID"); 	
 				String empName = rs.getString("EMP_NAME"); 
 				String empNo = rs.getString("EMP_NO"); 	
 				String email = rs.getString("EMAIL"); 	
@@ -139,7 +142,6 @@ public class EmployeeDAO {
 				
 				emp = new Employee(empId, empName, empNo, email, phone, departmentTitle, jobName, salary);
 			
-				
 			}
 			
 		}catch(Exception e) {
@@ -209,6 +211,7 @@ public class EmployeeDAO {
 		}finally {
 			if(rs!=null)
 				try {
+					// JDBC 객체 참조 변수 닫아준다.
 					if(rs!=null) rs.close();
 					if(pstmt !=null) pstmt.close();
 					if(conn!=null) conn.close();
@@ -286,14 +289,19 @@ public class EmployeeDAO {
 	}
 	
 	
+	/** 입력 받은 급여 이상을 받는 모든 사원 정보 조회 DAO
+	 * @param sal
+	 * @return tempList
+	 */
 	public List<Employee> selectSalaryEmp(int sal){
 		List<Employee> tempList = new ArrayList<>();
-			
+		// 결과 저장용 변수 만들기	
+		
 		try {
 			Class.forName(driver);
 			conn=DriverManager.getConnection(url, user, pw); 
 			String sql = "SELECT EMP_ID, EMP_NAME, EMP_NO, EMAIL, PHONE, NVL(DEPT_TITLE, '부서없음') DEPT_TITLE, JOB_NAME, SALARY"
-					+" FROM EMPLOYEE NATURAL JOIN JOB LEFT JOIN DEPARTMENT ON (DEPT_ID = DEPT_CODE) WHERE SALARY > ?";
+					+" FROM EMPLOYEE NATURAL JOIN JOB LEFT JOIN DEPARTMENT ON (DEPT_ID = DEPT_CODE) WHERE SALARY >= ?";
 			pstmt = conn.prepareStatement(sql);
 		
 			pstmt.setInt(1, sal);
@@ -331,6 +339,7 @@ public class EmployeeDAO {
 	
 	public Map<String, Integer> selectDeptTotalSalary(){
 		
+		// 결과 저장용 변수 
 		Map<String, Integer> sumlist = new LinkedHashMap<>();
 		try {
 			
@@ -370,14 +379,14 @@ public class EmployeeDAO {
 		
 		try {
 			Class.forName(driver);
-			conn=DriverManager.getConnection(url, user, pw); 
+			conn=DriverManager.getConnection(url, user, pw); // 커넥션 생성해서 얻어오기
 			stmt = conn.createStatement();
 			
-			String sql = "SELECT JOB_CODE, ROUND(AVG(SALARY), 1) AVG_SAL FROM EMPLOYEE GROUP BY JOB_CODE ORDER BY JOB_CODE";
+			String sql = "SELECT JOB_NAME, ROUND(AVG(SALARY), 1) AVG_SAL FROM EMPLOYEE NATURAL JOIN JOB GROUP BY JOB_NAME, JOB_CODE ORDER BY JOB_CODE";
 			rs = stmt.executeQuery(sql);
 			
 			while(rs.next()) {
-				String jobCode = rs.getString("JOB_CODE");
+				String jobCode = rs.getString("JOB_NAME");
 				double avgSal = rs.getDouble("AVG_SAL");
 				
 				avglist.put(jobCode, avgSal);
@@ -419,11 +428,10 @@ public class EmployeeDAO {
 				String empNo = rs.getString("EMP_NO"); 
 				String email = rs.getString("EMAIL"); 	
 				String phone = rs.getString("PHONE"); 
-				String departmentTitle = rs.getString("DEPT_TITLE"); 
 				String jobName = rs.getString("JOB_NAME"); 
 				int salary = rs.getInt("SALARY"); 
 				
-				tempList.add(new Employee(empId, empName, empNo, email, phone, departmentTitle, jobName, salary));
+				tempList.add(new Employee(empId, empName, empNo, email, phone, dept, jobName, salary)); //List에 담기
 			}
 			
 		}catch(Exception e) {

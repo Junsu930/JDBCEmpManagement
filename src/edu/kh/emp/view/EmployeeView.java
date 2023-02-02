@@ -140,7 +140,8 @@ public class EmployeeView {
 	 */
 	public void selectEmpId() {
 		
-		Employee emp = dao.selectEmpId();
+		int empId = inputEmpId();
+		Employee emp = dao.selectEmpId(empId);
 		printOne(emp);
 		
 	}
@@ -320,10 +321,7 @@ public class EmployeeView {
 		
 		printAll(dao.selectDeptEmp(dept));
 		
-	
 	}
-	
-	
 	
 	/**
 	 * 입력 받은 급여 이상을 받는 모든 사원 정보 조회
@@ -341,12 +339,12 @@ public class EmployeeView {
 	 * 부서별 급여 합 전체 조회
 	 */
 	public void selectDeptTotalSalary() {
-		
+		System.out.println("<부서별 급여 합 전체 조회>");
 		System.out.println("|   부서   |     총 급여     |");
 		
 		for(String key :  dao.selectDeptTotalSalary().keySet()) {
 			int val = dao.selectDeptTotalSalary().get(key);
-			System.out.println("|    "+key +"    |     "+ val + "     |");
+			System.out.println("|    "+key +"    |     "+ val + "원     |");
 		}
 		
 		
@@ -357,11 +355,11 @@ public class EmployeeView {
 	 */
 	public void selectJobAvgSalary() {
 		
-		System.out.println("|   직급   |     평균 급여     |");
+		System.out.println("|    직급    |      평균 급여      |");
 		
 		for(String key :  dao.selectJobAvgSalary().keySet()) {
 			double val = dao.selectJobAvgSalary().get(key);
-			System.out.println("|    "+key +"    |     "+ val + "     |");
+			System.out.println("|    "+key +"    |     "+ val + "원     |");
 		}
 		
 		
