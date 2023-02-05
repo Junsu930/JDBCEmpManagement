@@ -490,6 +490,7 @@ public class EmployeeDAO {
 	public int deleteEmployee(int empId) {
 		int result = 0;
 		try {
+		
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url, user, pw);
 			conn.setAutoCommit(false);
